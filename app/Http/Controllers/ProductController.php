@@ -4,22 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
+
+// use Image;
 
 class ProductController extends Controller
 {
     public function index()
     {
         $Products = Product::all();
-        // dd($Products->count());
         return view('products.index', compact('Products'));
     }
-
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        return view('products.create');
     }
 
     /**
@@ -27,18 +28,28 @@ class ProductController extends Controller
      */ 
     public function store(Request $request)
     {
+
+// protected $fillable =['name','description','brand','cost-price','selling-price','image','total-stock','minimum-stock'];
         $request->validate(
             [
                 "name" => "required|unique:products|max:255",
                 "description" => "required",
-                'category' => 'required',
-                "price" => 'required',
-                "image" => 'required'
+                'brand' => 'required',
+                "cost_price" => 'required',
+                "selling_price" => 'required',
+                "minimum_stock" => 'required',
+                "total_stock" => 'required',
+                "image" => 'required|image|mimes:jpeg,png,jpg,gif,svg'
             ]
         );
         $requestedData = $request->all();
+        $image1 =Image::make($request->file('image'));
+        $image1->resize(800, 800, function ($constraint) {
+            $constraint->aspectRatio();
+            $constraint->upsize();
+        });
         $imageName =  time() . '_' . $request->image->getClientOriginalName();
-        $request->file('image')->move(public_path('images'), $imageName);
+        $image1->save(public_path('images/'.$imageName));
         $requestedData['image'] = $imageName;
         Product::create($requestedData);
         return redirect("/product")->with('alert-success', 'Product created successfully.');
@@ -49,7 +60,7 @@ class ProductController extends Controller
      */
     public function show(string $id)
     {
-        //
+        
     }
 
     /**
@@ -57,11 +68,8 @@ class ProductController extends Controller
      */
     public function edit(string $id)
     {
-        $Product = Product::find($id);
-
-
-        $Products = Product::all();
-        return view("products.edit", compact('Product', 'Products'));
+        $product = Product::find($id);
+        return view("products.edit", compact('product'));
     }
 
     /**
@@ -69,16 +77,18 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-             
         $request->validate(
             [
-                "name" => "required|max:255",
+                "name" => "required|unique:products|max:255",
                 "description" => "required",
-                'category' => 'required',
-                "price" => 'required',
+                'brand' => 'required',
+                "cost_price" => 'required',
+                "selling_price" => 'required',
+                "minimum_stock" => 'required',
+                "total_stock" => 'required'
             ]
         );
-        
+
         $requestedData = $request->all();
         // dd(gettype($requestedData));
         if (array_key_exists('image', $requestedData)) {
@@ -87,7 +97,6 @@ class ProductController extends Controller
             $request->file('image')->move(public_path('images'), $imageName);
             $requestedData['image'] = $imageName;
         } 
-
         $product->update($requestedData);
         return redirect("/product")->with('alert-success', 'Product Updated Success fully successfully.');
     }

@@ -15,11 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->string('category');
-            $table->integer('price');
+            $table->string('brand');
+            $table->integer('cost_price');
+            $table->integer('selling_price');
+            $table->integer('total_stock');
+            $table->integer('minimum_stock');
             $table->string('image');
             $table->timestamps();
         });
+
     }
     /**
      * Reverse the migrations.

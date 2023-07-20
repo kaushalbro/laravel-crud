@@ -1,81 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Product</title>
     <link rel="stylesheet" href="style.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.5/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js"></script>
+<style>
+    .delete-btn{
+        border: none;
+    }
+</style>
 </head>
 
 <body>
-    <div class="container ">
+    <div class="container">
+        <a class="btn btn-primary my-5" href={{ route('product.create') }}>Add New Product</a>
         <div class="row flex-column align-items-center">
-            <form class="col-5 g-4" action="{{ route('product.store') }}" method="POST" enctype="multipart/form-data">
-                {{-- localhost/product --}}
-                @csrf
-                <h1>Add new Product</h1>
-                {{-- @if (session('success'))
-                    {{ session('success') }}
-                @endif --}}
-                <div class="flash-message">
-                    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
-                        @if (Session::has('alert-' . $msg))
-                            <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }} <a
-                                    href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                            </p>
-                        @endif
-                    @endforeach
-                </div> <!-- end .flash-message -->
+            {{-- <div class="col m-5">
 
-                <div class="">
-                    <label for="name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="name" name="name">
-                </div>
-                <div class="">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea name="description" class="form-control" id="description" rows="3"></textarea>
-                </div>
-                <div class="col-md-4">
-                    <label for="Catgory" class="form-label">Category</label>
-                    <select id="Category" class="form-select" name="category">
-                        <option>Electronics</option>
-                        <option>Electrical</option>
-                        <option>Goods</option>
-                        <option>Books</option>
-                    </select>
-                </div>
-                <div class="col-12">
-                    <label for="price" class="form-label">Price</label>
-                    <input name="price"type="number" class="form-control" id="price" placeholder="Rs 1500">
-                </div>
-                <div class="mb-3">
-                    <label for="img" class="form-label">Product image</label>
-                    <input class="form-control" type="file" id="img" name="image">
-                </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Add</button>
-                </div>
-            </form>
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul>
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-            <div class="col m-5">
-                @if ($Products->count() === 0)
-
-
-                @else
                 <h1>Product Lists</h1>
-                    {{-- <p class="bg-danger text-white p-1">no product</p> --}}
                 <table class="table">
                     <thead>
                         <tr>
@@ -96,7 +49,7 @@
                                 <td>{{ $product->description }}</td>
                                 <td>{{ $product->category }}</td>
                                 <td>{{ $product->price }}</td>
-                                <td><img style="height:100px;width:150px" src="{{ asset('images/'.$product->image) }}"
+                                <td><img style="height:100px;width:150px" src="{{ asset('images/' . $product->image) }}"
                                         alt="image"></td>
                                 <td class="">
                                     <a href="{{ url('/product/' . $product->id . '/edit') }}"
@@ -111,19 +64,69 @@
                         @endforeach
                     </tbody>
                 </table>
-                @endif
+            </div> --}}
+            <table id="product_table" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>S.N</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Generic,Brand</th>
+                        <th>Cost Price(in Rs)</th>
+                        <th>Selling price(in Rs)</th>
+                        <th>total stock</th>
+                        <th>min-stock</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($Products as $product)
+                        <tr>
+                            <td>{{ $product->id }}</td>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ $product->description }}</td>
+                            <td>{{ $product->brand }}</td>
+                            <td>{{ $product->cost_price }}</td>
+                            <td>2{{ $product->selling_price }}</td>
+                            <td>{{ $product->total_stock }}</td>
+                            <td>{{ $product->minimum_stock }}</td>
+                            <td>
 
+                                <form action="{{ route('product.destroy', $product->id) }}" method="POST">
+                                    <a class="p-2" href="{{ url('/product/' . $product->id . '/edit') }}"> <i
+                                            class="fa-solid fa-pen-to-square"></i>
+                                    </a>
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="delete-btn text-danger"> <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
 
-
-
-
-
-
-            </div>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>S.N</th>
+                        <th>Name</th>
+                        <th>Generic,Brand</th>
+                        <th>Cost Price(in Rs)</th>
+                        <th>Selling price(in Rs)</th>
+                        <th>total stock</th>
+                        <th>min-stock</th>
+                        <th>Description</th>
+                        <th>Action</th>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous">
+    </script>
+    <script>
+        new DataTable('#product_table');
     </script>
 </body>
 
