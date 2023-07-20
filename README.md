@@ -1,5 +1,5 @@
-Product crud:
-END POINTS:
+#Product crud:
+#END POINTS:
 Method - entrypoint
 GET         /product - list product and add product form 
 GET         /product/{id}/edit - list product and and edit product form
