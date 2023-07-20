@@ -1,10 +1,10 @@
-#Product crud:
-#END POINTS:
-Method - entrypoint
-GET         /product - list product and add product form 
-GET         /product/{id}/edit - list product and and edit product form
-DELETE      /product/{id} - delete product
-POST        /product - add product create new product record in database table
+# Product crud:
+# END POINTS:
+# Method - entrypoint
+GET         /product - list product and add product form <br/>
+GET         /product/{id}/edit - list product and and edit product form<br/>
+DELETE      /product/{id} - delete product<br/>
+POST        /product - add product create new product record in database table<br/>
 PATCH   /product/{id} - update existing data of a particular product
 
 
