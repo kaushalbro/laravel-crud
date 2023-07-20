@@ -1,6 +1,6 @@
 # Product crud:
-# END POINTS:
-# Method - entrypoint
+END POINTS: <br/>
+Method - entrypoint <br/>
 GET         /product - list product and add product form <br/>
 GET         /product/{id}/edit - list product and and edit product form<br/>
 DELETE      /product/{id} - delete product<br/>
